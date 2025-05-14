@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+africastalking
+sqlalchemy
+pydantic
+alembic
+httpx
+jinja2
+python-decouple
+psycopg2-binary  
+celery[redis]
