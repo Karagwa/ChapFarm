@@ -6,9 +6,10 @@ from sqlmodel import Session, select
 from app.database import get_session
 from app.models import Farmer, USSDSession, WeatherData
 from datetime import datetime
-from app.utils.weather import get_weather, get_forecast, get_weather_alert
+from ..services.weather import get_weather, get_forecast, get_weather_alert
 from app.utils.AI_support import find_similar_advice
 from app.models import Advice
+from app.utils.AI_support import get_ai_advice
 
 router = APIRouter()
 
@@ -28,7 +29,7 @@ async def ussd_callback(
     db_session = session.exec(select(USSDSession).where(USSDSession.session_id == session_id)).first()
     #db_session.last_step= 
     if not db_session:
-        db_session = USSDSession(session_id=session_id, farmer_id=None, last_step="INITIAL")
+        db_session = USSDSession(session_id=session_id, last_step="INITIAL", farmer_id=0)
         session.add(db_session)
         session.commit()
         session.refresh(db_session)
@@ -79,11 +80,15 @@ async def ussd_callback(
 
     # Registration flow
     elif last_step == "REGISTER_NAME":
-        db_session.temp_data = {"name": user_input}
+        if db_session.temp_data is None:
+            db_session.temp_data = {}
+        db_session.temp_data["name"] = user_input
         response = "CON Enter your location:"
         db_session.last_step = "REGISTER_LOCATION"
 
     elif last_step == "REGISTER_LOCATION":
+        if db_session.temp_data is None:
+            db_session.temp_data = {}
         name = db_session.temp_data["name"]
         new_farmer = Farmer(name=name, phone=phone_number, location=user_input)
         session.add(new_farmer)
@@ -102,7 +107,10 @@ You can now access full features."""
 
         if location:
             try:
-                response = await format_weather_response(option, location)
+                if not isinstance(option, str) or not option:
+                    response = "END Invalid weather option selected."
+                else:
+                    response = await format_weather_response(option, location)
                 db_session.last_step = "WEATHER_RESPONSE"
             except Exception:
                 response = "END Error fetching weather data. Please try again later."
@@ -112,7 +120,9 @@ You can now access full features."""
             db_session.last_step = "WEATHER_ENTER_LOCATION"
 
     elif last_step == "WEATHER_ENTER_LOCATION":
-        option = db_session.temp_data["option"]
+        if db_session.temp_data is None:
+            db_session.temp_data = {}
+        option = str(db_session.temp_data.get("option"))
         location = user_input
         try:
             response = await format_weather_response(option, location)
@@ -130,17 +140,26 @@ You can now access full features."""
         existing_advices = session.exec(select(Advice)).all()
         issues_list = [adv.issue for adv in existing_advices]
     
-        from app.utils.fuzzy import find_similar_issue
-        match_issue, score = find_similar_issue(issue, issues_list)
+        from app.utils.fuzzy import find_similar_advice
+        result = find_similar_advice(session, issue)
+        if result:
+            match_issue, score = result
+        else:
+            match_issue, score = None, 0
 
         if match_issue:
             matched_advice = next((adv for adv in existing_advices if adv.issue == match_issue), None)
-            response = f"END Advice:\n{matched_advice.advice_text}"
+            if matched_advice:
+                response = f"END Advice:\n{matched_advice.advice_text}"
+            else:
+                response = "END No matching advice found."
     else:
-        from app.utils.AI_support import get_advice_from_ai
+        
         try:
-            advice_text = await get_advice_from_ai(issue)
-            new_advice = Advice(issue=issue, advice_text=advice_text)
+            if 'issue' not in locals():
+                issue = user_input.lower()  # Ensure 'issue' is defined
+            advice_text = await get_ai_advice(user_input=issue, session=session)  # Pass 'issue' and 'session'
+            new_advice = Advice(query_text=issue, response_text=advice_text)
             session.add(new_advice)
             session.commit()
             response = f"END Advice:\n{advice_text}"
@@ -184,13 +203,16 @@ async def format_weather_response(option: str, location: str):
 
 async def format_alert_response(location: str):
     # Fetch weather alerts from the API
-    alerts = await get_weather_alert(location)
+    alerts = await get_weather_alert(location, session=Depends(get_session))
     if not alerts:
         return "END No weather alerts available."
     
     alert_text = ""
     for alert in alerts:
-        alert_text += f"\n{alert['alert_type']}: {alert['alert_message']} (Severity: {alert['severity']})"
+        alert_type = alert[0] if len(alert) > 0 else "Unknown"
+        alert_message = alert[1] if len(alert) > 1 else "No message available"
+        severity = alert[2] if len(alert) > 2 else "Unknown"
+        alert_text += f"\n{alert_type}: {alert_message} (Severity: {severity})"
     
     return f"END Weather Alerts for {location}:{alert_text}"
 

@@ -16,7 +16,7 @@ load_dotenv()
 # If not found, fallback to a local SQLite database
 # The format follows: dialect+driver://username:password@host:port/database
 sqlite_file_name = "app.db"
-DATABASE_URL = f"sqlite:///{sqlite_file_name}"
+DATABASE_URL = f"sqlite:///{sqlite_file_name}"  # SQLite database URL
 
 #Using check_same_thread=False allows FastAPI to use the same SQLite database
 #  in different threads. This is necessary as one single request could use more than one thread (for example in dependencies).
@@ -32,7 +32,7 @@ def create_db_and_tables():
     """Create the database and tables if they don't exist yet."""
     # Create all tables in the database using the SQLModel metadata
     # This will create the tables defined in your models if they don't already exist
-    SQLModel.metadata.drop_all(engine)  # Drop all tables (for development/testing purposes)
+    #SQLModel.metadata.drop_all(engine)  # Drop all tables (for development/testing purposes)
     SQLModel.metadata.create_all(engine)
     print("Creating database tables...")
 
@@ -51,12 +51,12 @@ def create_db_and_tables():
 
 # A typical function to get a database session (to be used in FastAPI dependency):
 def get_session():
-    # db = SessionLocal()
-    # try:
-    #     yield db  # This makes it compatible with FastAPI dependency injection
-    # finally:
-    #     db.close()  # Always close the session when done
-    with Session(engine) as session:
+    session = Session(engine)
+    try:
         yield session
+    finally:
+        session.close()
+
+
 
 SessionDep= Annotated[Session, Depends(get_session)]  # Type hint for FastAPI dependency injection

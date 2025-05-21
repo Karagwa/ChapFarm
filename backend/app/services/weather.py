@@ -2,8 +2,8 @@ import httpx
 from datetime import datetime
 from fastapi import HTTPException
 
-from backend.app.database import SessionDep
-from backend.app.models import WeatherAlert
+from ..database import SessionDep
+from ..models import WeatherAlert
 
 API_KEY = "4f24d63dca7048f2a1b225649250304"
 BASE_URL = "https://api.weatherapi.com/v1"

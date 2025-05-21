@@ -1,13 +1,29 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Any
+from typing import Literal, Optional, List, Dict, Any
+
+from enum import Enum
+from app.schemas import UserRole
 
 from sqlmodel import JSON, Column, SQLModel, Field, Relationship
 
 
+class User(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    username: str = Field(max_length=50, unique=True, index=True)
+    email: str = Field(max_length=100, unique=True, index=True)
+    password: str = Field(max_length=100)
+    role: UserRole = Field(default=UserRole.admin)
+
+
+    reset_token: Optional[str] = None
+    reset_token_expiry: datetime = Field(default_factory=lambda: datetime.now() + timedelta(hours=0.5))
+
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: Optional[datetime] = None
 
 class Farmer(SQLModel, table=True):
-    id:Optional[int] = Field(default=None, primary_key=True)
+    id:int = Field(default=None, primary_key=True)
     name:str = Field(max_length=100, index=True)
     phone:str = Field(max_length=15, index=True)
     location:str = Field(max_length=100, index=True)
@@ -60,3 +76,18 @@ class Advice(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     query_text: str
     response_text: str
+    
+
+class TransportRequest(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    farmer_id: int = Field(foreign_key="farmer.id")
+    request_type: str  # Example: "Pickup", "Delivery"
+    transport_details: Optional[str] = None  # Additional details about the transport request
+    vehicle_type: Optional[str] = None  # Example: "Truck", "Van", "Bicycle"
+    status: str  # Example: "Pending", "Completed", "Cancelled"
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+    farmer: Optional[Farmer] = Relationship(back_populates="transport_requests")
+    
+    
+    
