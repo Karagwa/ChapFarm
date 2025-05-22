@@ -1,0 +1,40 @@
+myenv
+__pycache__
+*.pyc
+.env
+app.db
+*.sqlite3
+*.db
+
+# Python distribution / packaging
+dist/
+build/
+*.egg-info/
+eggs/
+*.egg
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+
+# Environment
+.venv
+env/
+ENV/
+venv/
+.python-version
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# OS specific files
+.DS_Store
+Thumbs.db

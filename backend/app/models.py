@@ -57,7 +57,7 @@ class FarmerReport(SQLModel, table=True):
     farmer_id: int = Field(foreign_key="farmer.id")
     issue_type: str  # Example: "Flooding", "Pests", "Drought"
     description: Optional[str] = None
-    location: str = Field(index=True)
+    location: Optional[str] = None
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
     farmer: Optional[Farmer] = Relationship(back_populates="reports")
@@ -81,13 +81,17 @@ class Advice(SQLModel, table=True):
 class TransportRequest(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     farmer_id: int = Field(foreign_key="farmer.id")
-    request_type: str  # Example: "Pickup", "Delivery"
-    transport_details: Optional[str] = None  # Additional details about the transport request
-    vehicle_type: Optional[str] = None  # Example: "Truck", "Van", "Bicycle"
+    transport_type: Optional[str] = None  # Example: "Truck", "Van", "Bicycle"
+    pickup_location: Optional[str] = None
+    dropoff_location: Optional[str] = None
     status: str  # Example: "Pending", "Completed", "Cancelled"
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
     farmer: Optional[Farmer] = Relationship(back_populates="transport_requests")
     
-    
-    
+class AgricultureAlert(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    alert_type: str  # Example: "Pest", "Disease", "Weather"
+    description: Optional[str] = None
+    severity: str  # Example: "High", "Medium", "Low"
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
