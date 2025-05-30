@@ -7,6 +7,7 @@ class UserRole(str, Enum):
     admin = "admin"
     transport_provider = "transport_provider"
     agricultural_authority = "agricultural_authority"
+    farmer = "farmer"
 
 
 class UserCreate(BaseModel):
@@ -29,9 +30,46 @@ class LoginData(BaseModel):
     username: str
     password: str
 
+
+
 class PasswordResetRequest(BaseModel):
     email: EmailStr
 
 class PasswordResetConfirm(BaseModel):
-    token: str
+    code: str
     new_password: str
+
+
+class FarmerCreate(BaseModel):
+    name: str
+    phone: str
+    location: str
+    username: str
+    email: EmailStr
+    password: str
+
+
+class TransportProviderCreate(BaseModel):
+    name: str
+    phone: str
+    vehicle_type: str
+    location: str
+    username: str
+    email: EmailStr
+    password: str
+
+
+class AgricultureAuthorityCreate(BaseModel):
+    institution_name: str
+    name: str
+    phone: str
+    location: str
+    username: str
+    email: EmailStr
+    password: str
+
+
+class AdminCreate(BaseModel):
+    username: str
+    email: EmailStr
+    password: str

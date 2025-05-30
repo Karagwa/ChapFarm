@@ -16,19 +16,32 @@ from .routes.farmer_routes import router as farmer_router
 from .routes.weather_routes import router as weather_router
 from .routes.password_routes import router as password_router
 from .routes.auth_routes import router as auth_router
+from .routes.transport_routes import router as transport_router
+from .routes.agric_auth import router as agric_auth_router
+from .routes.admin import router as admin_router
 
-app = FastAPI()
+
+
+app = FastAPI(
+    swagger_ui_init_oauth={
+    "clientId": "treasure",  # Can be any string
+    "appName": "Chap-Farm"
+}
+)
 
 
 @app.on_event("startup")
-async def on_startup():
-    create_db_and_tables()
+def on_startup():
+    create_db_and_tables()  # This will create tables on app startup
 
 app.include_router(ussd_router)
 app.include_router(farmer_router)
 app.include_router(weather_router)
 app.include_router(password_router)
 app.include_router(auth_router)
+app.include_router(transport_router)
+app.include_router(agric_auth_router)
+app.include_router(admin_router)
 
 @app.get("/")
 def read_root():

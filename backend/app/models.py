@@ -5,7 +5,7 @@ from typing import Literal, Optional, List, Dict, Any
 from enum import Enum
 from app.schemas import UserRole
 
-from sqlmodel import JSON, Column, SQLModel, Field, Relationship
+from sqlmodel import JSON, Column, SQLModel, Field, Relationship, JSON
 
 
 class User(SQLModel, table=True):
@@ -16,11 +16,18 @@ class User(SQLModel, table=True):
     role: UserRole = Field(default=UserRole.admin)
 
 
-    reset_token: Optional[str] = None
-    reset_token_expiry: datetime = Field(default_factory=lambda: datetime.now() + timedelta(hours=0.5))
+    reset_code: Optional[str] = None
+    reset_code_expiry: datetime = Field(default_factory=lambda: datetime.now() + timedelta(hours=0.5))
 
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: Optional[datetime] = None
+    
+    # Relationships
+    farmer: Optional["Farmer"] = Relationship(back_populates="user")
+    transport_provider: Optional["TransportProvider"] = Relationship(back_populates="user")
+    authority: Optional["AgricultureAuthority"] = Relationship(back_populates="user")
+    admin: Optional["Admin"] = Relationship(back_populates="user")
+    
 
 class Farmer(SQLModel, table=True):
     id:int = Field(default=None, primary_key=True)
@@ -28,9 +35,59 @@ class Farmer(SQLModel, table=True):
     phone:str = Field(max_length=15, index=True)
     location:str = Field(max_length=100, index=True)
     registered_at:datetime = Field(default_factory=datetime.utcnow)
-
+    
+    # Relationships
+    user_id: Optional[int] = Field(foreign_key="user.id")
+    user: Optional[User] = Relationship(back_populates="farmer")
+    transport_requests: List['TransportRequest'] = Relationship(back_populates="farmer")
     reports: List['FarmerReport'] = Relationship(back_populates="farmer")
     sessions: List['USSDSession'] = Relationship(back_populates="farmer")
+    
+
+class TransportProvider(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str = Field(max_length=100, index=True)
+    phone: str
+    location: str
+    vehicle_type: Optional[str] = None  #TODO: Change to Enum if needed
+    registered_at: datetime = Field(default_factory=datetime.utcnow)
+
+    user_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    user: Optional[User] = Relationship(back_populates="transport_provider")
+
+    #transport_requests: List["TransportRequest"] = Relationship(back_populates="transport_provider")
+
+class AgricultureAuthority(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    institution_name: str = Field(max_length=100, index=True)
+    name: str
+    phone: str
+    location: str
+    registered_at: datetime = Field(default_factory=datetime.utcnow)
+
+    user_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    user: Optional[User] = Relationship(back_populates="authority")
+
+    alerts: List["AgricultureAlert"] = Relationship(back_populates="authority") 
+
+class Admin(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str
+    email: str = Field(max_length=100, unique=True, index=True)
+    phone: str = Field(max_length=15, index=True)
+    registered_at: datetime = Field(default_factory=datetime.utcnow)
+
+    user_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    user: Optional[User] = Relationship(back_populates="admin")   
+class AgricultureAlert(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    alert_type: str  # Example: "Pest", "Disease", "Weather"
+    description: Optional[str] = None
+    severity: str  # Example: "High", "Medium", "Low"
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+    authority_id: Optional[int] = Field(foreign_key="agricultureauthority.id")
+    authority: Optional[AgricultureAuthority] = Relationship(back_populates="alerts")
 
 class WeatherData(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -89,9 +146,4 @@ class TransportRequest(SQLModel, table=True):
 
     farmer: Optional[Farmer] = Relationship(back_populates="transport_requests")
     
-class AgricultureAlert(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    alert_type: str  # Example: "Pest", "Disease", "Weather"
-    description: Optional[str] = None
-    severity: str  # Example: "High", "Medium", "Low"
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    
