@@ -2,11 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 from typing import List
 
-from app.models import AgricultureAuthority, TransportProvider, User, Farmer, UserRole
+from app.models import AgricultureAuthority, TransportProvider, TransportRequest, User, Farmer, UserRole
 from app.schemas import UserCreate, UserRead, FarmerCreate, TransportProviderCreate, AgricultureAuthorityCreate, AdminCreate
 from app.database import get_session
 from app.auth.security import hash_password
-from app.auth.jwt_handler import decode_access_token, require_admin
+from app.auth.jwt_handler import decode_access_token, require_admin, require_transport_provider
 
 
 router = APIRouter(
@@ -220,3 +220,32 @@ def deactivate_user(user_id: int, session: Session = Depends(get_session),
     session.commit()
     return {"message": "User deactivated"}
 
+# 
+@router.get("/dashboard/summary")
+def get_dashboard_summary(session: Session = Depends(get_session), 
+                          admin_user: User = Depends(require_admin)):
+    total_users = session.exec(select(User)).all()
+    total_farmers = session.exec(select(Farmer)).all()
+    total_transport_providers = session.exec(select(TransportProvider)).all()
+    total_authorities = session.exec(select(AgricultureAuthority)).all()
+    total_transport_requests = session.exec(select(TransportRequest)).all()
+
+    return {
+        "total_users": len(total_users),
+        "total_farmers": len(total_farmers),
+        "total_transport_providers": len(total_transport_providers),
+        "total_agriculture_authorities": len(total_authorities),
+        "total_transport_requests": len(total_transport_requests)
+    }
+
+@router.get("/farmers")
+def list_farmers(session: Session = Depends(get_session), admin_user: User = Depends(require_admin)):
+    return session.exec(select(Farmer)).all()
+
+@router.get("/transport-providers")
+def list_transport_providers(session: Session = Depends(get_session), admin_user: User = Depends(require_admin)):
+    return session.exec(select(TransportProvider)).all()
+
+@router.get("/agriculture-authorities")
+def list_agriculture_authorities(session: Session = Depends(get_session), admin_user: User = Depends(require_admin)):
+    return session.exec(select(AgricultureAuthority)).all()

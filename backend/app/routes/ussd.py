@@ -96,11 +96,19 @@ async def ussd_callback(
         db_session.temp_data["name"] = user_input
         response = "CON Enter your location:"
         db_session.last_step = "REGISTER_LOCATION"
-
+        
     elif last_step == "REGISTER_LOCATION":
         db_session.temp_data = db_session.temp_data or {}
+        db_session.temp_data["location"] = user_input
+        response = "CON Enter your region:"
+        db_session.last_step = "REGISTER_REGION"
+
+    elif last_step == "REGISTER_REGION":
+        db_session.temp_data = db_session.temp_data or {}
         name = db_session.temp_data.get("name", "Farmer")
-        new_farmer = Farmer(name=name, phone=phone_number, location=user_input)
+        location = db_session.temp_data.get("location", "Unknown")
+        region = user_input
+        new_farmer = Farmer(name=name, phone=phone_number, location=location, region=region, user_id=db_session.farmer_id)
         session.add(new_farmer)
         session.commit()
         db_session.farmer_id = new_farmer.id
