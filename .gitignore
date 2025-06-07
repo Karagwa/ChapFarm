@@ -3,43 +3,49 @@ __pycache__/
 *.py[cod]
 *.db
 *.sqlite3
+backend/app.db
 .env
 .venv/
 myenv/
 *.log
 
-# Ignore VS Code settings
+# VS Code settings
 .vscode/
 
-# Ignore compiled files
+# Compiled files
 *.so
 *.dll
 *.dylib
 
-# Ignore pytest cache
+# Testing and coverage
 .pytest_cache/
-
-# Ignore coverage files
-htmlcov/
 .coverage
 .cache/
+htmlcov/
 
 # === Node / React ===
+
+# node_modules for root and frontend folder
 node_modules/
-.vite/
-npm-debug.log
-build/
+frontend/node_modules/
+
+# Build and cache
 dist/
+build/
+.vite/
+.cache/
+
+# Logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# lock files (optional if using both npm & yarn across machines)
+# Lock files (optional to ignore, but included if you want fresh installs)
 package-lock.json
 yarn.lock
 
-# React generated chunks (optional cleanup)
+# Chunk files (optional cleanup)
 *.chunk.js
 
 # === OS / System ===
