@@ -34,6 +34,7 @@ class Farmer(SQLModel, table=True):
     name:str = Field(max_length=100, index=True)
     phone:str = Field(max_length=15, index=True)
     location:str = Field(max_length=100, index=True)
+    region:str = Field(max_length=50, index=True, default="Unknown")  # Optional region field
     registered_at:datetime = Field(default_factory=datetime.utcnow)
     
     # Relationships
@@ -115,6 +116,7 @@ class FarmerReport(SQLModel, table=True):
     issue_type: str  # Example: "Flooding", "Pests", "Drought"
     description: Optional[str] = None
     location: Optional[str] = None
+    status: str =Field(default="Pending")  # Example: "Pending", "Resolved", "In Progress"
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
     farmer: Optional[Farmer] = Relationship(back_populates="reports")

@@ -1,5 +1,5 @@
 
-````markdown
+
 # 🌿 ChapFarm – Climate-Smart Agricultural Platform
 
 **ChapFarm** is a hybrid USSD + Web platform designed to empower smallholder farmers by providing easy access to climate alerts, issue reporting, and logistics coordination — even with basic feature phones. Built using **FastAPI (backend)** and **React (frontend)**, ChapFarm bridges the gap between farmers, transport providers, and agricultural authorities.
@@ -171,7 +171,7 @@ MIT License — use, modify, and share freely. Just don’t forget the smallhold
 Built with ❤️ by \[Your Name or Team]
 Supported by Africa's Talking, Amazon Bedrock & Open Source contributors
 
-```
+
 
 
 

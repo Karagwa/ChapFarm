@@ -34,3 +34,4 @@ async def update_transport_request(
     session.refresh(db_request)
     #TODO send notification to farmer via USSD
     return db_request     
+

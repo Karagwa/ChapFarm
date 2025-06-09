@@ -1,40 +1,53 @@
-myenv
-__pycache__
-*.pyc
-.env
-app.db
-*.sqlite3
+# === Python / FastAPI ===
+__pycache__/
+*.py[cod]
 *.db
+*.sqlite3
+backend/app.db
+.env
+.venv/
+myenv/
+*.log
 
-# Python distribution / packaging
+# VS Code settings
+.vscode/
+
+# Compiled files
+*.so
+*.dll
+*.dylib
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+.cache/
+htmlcov/
+
+# === Node / React ===
+
+# node_modules for root and frontend folder
+node_modules/
+frontend/node_modules/
+
+# Build and cache
 dist/
 build/
-*.egg-info/
-eggs/
-*.egg
+.vite/
+.cache/
 
-# Testing
-.coverage
-htmlcov/
-.pytest_cache/
-.tox/
-.nox/
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Environment
-.venv
-env/
-ENV/
-venv/
-.python-version
+# Lock files (optional to ignore, but included if you want fresh installs)
+package-lock.json
+yarn.lock
 
-# IDE files
-.idea/
-.vscode/
-*.swp
-*.swo
-*.sublime-project
-*.sublime-workspace
+# Chunk files (optional cleanup)
+*.chunk.js
 
-# OS specific files
+# === OS / System ===
 .DS_Store
 Thumbs.db
