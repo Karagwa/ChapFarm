@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *.db
+app.db  # Database file
 *.sqlite3
 backend/app.db
 .env

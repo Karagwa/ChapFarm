@@ -73,3 +73,8 @@ class AdminCreate(BaseModel):
     username: str
     email: EmailStr
     password: str
+    
+class SMSRequest(BaseModel):
+    to: str
+    message: str
+    from_: str = "your_sender_id_here"
