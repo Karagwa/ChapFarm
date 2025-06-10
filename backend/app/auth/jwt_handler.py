@@ -9,7 +9,7 @@ from app.database import get_session
 from app.models import User
 load_dotenv()
 
-SECRET_KEY= os.getenv("JWT_SECRET_KEY", "supersecret")
+SECRET_KEY= os.getenv("JWT_SECRET_KEY")
 ALGORITHM="HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 
@@ -22,11 +22,11 @@ def create_access_token(data: dict):
         to_encode['sub'] = str(to_encode['sub'])
     expire = datetime.now() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM) # type: ignore
 
 def decode_access_token(token: str):
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM]) # type: ignore
         return payload
     except JWTError:
         return None
@@ -45,7 +45,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), session: Session = Dep
         # Debug 2: Verify secret key and algorithm
         print(f"Using SECRET_KEY: {SECRET_KEY}, ALGORITHM: {ALGORITHM}")
         
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM]) # type: ignore
         print(f"Decoded payload: {payload}")  # Debug 3
         
         user_id = payload.get("sub")

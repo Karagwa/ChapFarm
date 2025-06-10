@@ -1,12 +1,14 @@
 import httpx
 from datetime import datetime
 from fastapi import HTTPException
+import os
 
 from ..database import SessionDep
 from ..models import WeatherAlert
 
-API_KEY = "4f24d63dca7048f2a1b225649250304"
-BASE_URL = "https://api.weatherapi.com/v1"
+
+API_KEY = os.getenv("WEATHER_API_KEY")
+BASE_URL = os.getenv("WEATHER_API_BASE_URL", "http://api.weatherapi.com/v1")
 
 async def get_weather(location: str) -> dict:
     url = f"{BASE_URL}/current.json?key={API_KEY}&q={location}"

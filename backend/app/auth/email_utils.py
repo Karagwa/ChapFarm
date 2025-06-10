@@ -1,4 +1,5 @@
 import datetime
+import os
 import aiosmtplib
 from email.message import EmailMessage
 async def send_reset_email(to_email: str, code: str):
@@ -143,6 +144,6 @@ async def send_success_email(to_email: str, message: str):
         hostname="smtp.gmail.com",
         port=587,
         start_tls=True,
-        username="annkaragwa@gmail.com",
-        password="jrajllshlftzntgu"  # Store in environment variables!
+        username= os.getenv("EMAIL_USERNAME"),  # Store in environment variables!
+        password=os.getenv("EMAIL_PASSWORD")  # Store in environment variables!
     )
