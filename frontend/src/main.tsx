@@ -17,6 +17,8 @@ import RegisterTransportProvider from './pages/RegisterTransportProvider';
 import TransportRequestsPage from './pages/TransportRequest';
 import MessagingPage from './pages/MessagingPage';
 import AlertsPage from './pages/AlertsPage';
+import AuthMessagesPage from './pages/AuthMessagesPage';
+import AnalyticsPage from './pages/AnalysisDashboard';
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -37,6 +39,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path="/admin/register-transport" element={<RegisterTransportProvider />} />
         <Route path="/admin/transport-request" element={<TransportRequestsPage />} />
         <Route path="/admin/messages" element={<MessagingPage/>} />
+        <Route path="/authority/messages" element={<AuthMessagesPage />} />
+        <Route path="/authority/analysis" element={<AnalyticsPage />} />
         <Route path="/admin/alerts" element={<AlertsPage/>} />
       </Routes>
     </BrowserRouter>
