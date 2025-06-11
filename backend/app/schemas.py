@@ -25,6 +25,11 @@ class UserRead(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
+    
+class TokenData(BaseModel):
+    id: Optional[int] = None
+    username: Optional[str] = None
+    role: Optional[UserRole] = None
 
 class LoginData(BaseModel):
     username: str

@@ -19,7 +19,7 @@ from .routes.auth_routes import router as auth_router
 from .routes.transport_routes import router as transport_router
 from .routes.agric_auth import router as agric_auth_router
 from .routes.admin import router as admin_router
-
+from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI(
@@ -27,6 +27,15 @@ app = FastAPI(
     "clientId": "treasure",  # Can be any string
     "appName": "Chap-Farm"
 }
+)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Or ["*"] for all
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
