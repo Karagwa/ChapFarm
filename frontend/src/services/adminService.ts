@@ -1,5 +1,6 @@
 import axios from 'axios';
 import API_BASE_URL  from '../config/api_config';
+import { authService } from './auth';
 
 import { FarmerCreate, AgricultureAuthorityCreate, TransportProviderCreate } from '../types/index';
 
@@ -10,15 +11,42 @@ export const adminService = {
     return res.data;
   },
 
-  registerAuthority: async (data: AgricultureAuthorityCreate) => {
-    const res = await axios.post(`${API_BASE_URL}/admin/authority/register`, data);
-    return res.data;
+  registerAuthority: async (data) => {
+    const token = authService.getToken();
+    return await axios.post(
+        `${API_BASE_URL}/admin/authority/register`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // 🔐 Send the token here
+        },
+      }
+    );
   },
-
-  registerTransport: async (data: TransportProviderCreate) => {
-    const res = await axios.post(`${API_BASE_URL}/admin/transport/register`, data);
-    return res.data;
+  registerAdmin: async (data) => {
+    const token = authService.getToken();
+    return await axios.post(
+      `${API_BASE_URL}/admin/admins/register`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // 🔐 Send the token here
+        },
+      }
+    );
   },
+    registerTransportProvider: async (data: TransportProviderCreate) => {
+        const token = authService.getToken();
+        return await axios.post(
+        `${API_BASE_URL}/admin/transport/register`,
+        data,
+        {
+            headers: {
+            Authorization: `Bearer ${token}`, // 🔐 Send the token here
+            },
+        }
+        );
+    },
 
   getDashboardSummary: async () => {
     const res = await axios.get(`${API_BASE_URL}/admin/dashboard/summary`);

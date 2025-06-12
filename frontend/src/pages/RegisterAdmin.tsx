@@ -1,17 +1,32 @@
 import React, { useState } from 'react';
 import AdminLayout from '../components/layouts/AdminLayout';
-
+import { adminService } from '../services/adminService';
+// export interface AdminCreate {
+//   username: string;
+//   email: string;
+//   password: string;
+// }
 const RegisterAdmin = () => {
-  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'admin' });
+  const [form, setForm] = useState({ username: '', email: '', password: '', role: 'admin' });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
-  const handleSubmit = (e: React.FormEvent) => {
+const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Later: send to backend API
-    alert(`Admin registered: ${JSON.stringify(form, null, 2)}`);
+    try {
+      const response = await adminService.registerAdmin({
+        
+        username: form.username,
+        email: form.email,
+        password: form.password,
+      });
+      console.log('Registration successful:', response);
+      // Optionally redirect or show success message
+    } catch (error) {
+      console.error('Registration failed:', error);
+      // Handle error (e.g., show error message to user)
+    }
   };
 
   return (
@@ -20,11 +35,12 @@ const RegisterAdmin = () => {
         <h1 className="text-2xl font-bold text-gray-800 mb-4">Register New Admin</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">Full Name</label>
+            <label className="block mb-1 text-sm font-medium text-gray-700">Username</label>
             <input
               type="text"
-              name="name"
-              value={form.name}
+              name="username"
+              value={form.username}
+              placeholder="Enter username"
               onChange={handleChange}
               required
               className="w-full border px-4 py-2 rounded focus:outline-none focus:ring-1 focus:ring-chapfarm-700"
@@ -36,7 +52,9 @@ const RegisterAdmin = () => {
               type="email"
               name="email"
               value={form.email}
+              placeholder="Enter email address"
               onChange={handleChange}
+              
               required
               className="w-full border px-4 py-2 rounded focus:outline-none focus:ring-1 focus:ring-chapfarm-700"
             />
@@ -47,6 +65,7 @@ const RegisterAdmin = () => {
               type="password"
               name="password"
               value={form.password}
+              placeholder="Enter password"
               onChange={handleChange}
               required
               className="w-full border px-4 py-2 rounded focus:outline-none focus:ring-1 focus:ring-chapfarm-700"
