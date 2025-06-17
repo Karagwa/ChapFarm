@@ -4,8 +4,9 @@ from typing import Literal, Optional, List, Dict, Any
 
 from enum import Enum
 from app.schemas import UserRole
+from sqlalchemy import JSON as SQLAlchemyJSON
 
-from sqlmodel import JSON, Column, SQLModel, Field, Relationship, JSON
+from sqlmodel import  Column, SQLModel, Field, Relationship, JSON
 
 
 class User(SQLModel, table=True):
@@ -121,16 +122,24 @@ class FarmerReport(SQLModel, table=True):
 
     farmer: Optional[Farmer] = Relationship(back_populates="reports")
 
+
+
 class USSDSession(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    farmer_id: int = Field(foreign_key="farmer.id")
-    session_id: str = Field(unique=True)
-    last_step: Optional[str] = None  # Example: "MAIN_MENU", "WEATHER_REQUEST"
-    temp_data: Optional[Dict] = Field(default=None, sa_column=Column(JSON))
+    session_id: str = Field(unique=True, index=True)
+    phone_number: str = Field(index=True)
+    farmer_id: Optional[int] = Field(default=None, foreign_key="farmer.id")
+    current_step: str = Field(default="main_menu")
+    last_step: str = Field(default="INITIAL")
+    
+    # Use JSON field for storing temporary data
+    temp_data: Optional[Dict[str, Any]] = Field(default=None, sa_column=Column(SQLAlchemyJSON))
+    
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: Optional[datetime] = None
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
-    farmer: Optional[Farmer] = Relationship(back_populates="sessions")
-
+    farmer: Optional["Farmer"] = Relationship(back_populates="sessions")
 class Advice(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     query_text: str

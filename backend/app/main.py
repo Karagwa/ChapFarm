@@ -55,4 +55,3 @@ app.include_router(admin_router)
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
-
