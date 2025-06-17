@@ -7,7 +7,7 @@ import json
 
 # Load API Key from environment variables
 # Make sure your environment variable is set to OPENWEATHER_API_KEY for consistency
-#WEATHER_API_KEY=10760394ac7a790cfdd19c6561d09f4c
+
 API_KEY = os.getenv("OPENWEATHER_API_KEY").strip()
 
 # Base URLs for OpenWeatherMap API
