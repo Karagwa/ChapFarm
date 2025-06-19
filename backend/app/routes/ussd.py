@@ -92,7 +92,7 @@ async def ussd_callback(
                     db_session.last_step = "FARMER_WEATHER"
                 elif user_input == "2":
                     response = "CON Enter your location for weather alerts:"
-                    db_session.last_step = "ALERT_RESPONSE"
+                    db_session.last_step = "ALERT_ENTER_LOCATION"
                 elif user_input == "3":
                     response = "CON Enter your advice request:"
                     db_session.last_step = "GET_ADVICE"
@@ -303,44 +303,41 @@ You can now access full features."""
 
 
 
-
-
+    
 async def format_alert_response(location: str, session: Session) -> str:
     """
     Fetches and formats active weather alerts for a given location from the database.
     """
+    location_list = location.strip().split("*")
+    location = location_list[2].strip() if len(location_list) > 0 else "Unknown" # Use first part as location
     try:
         now = datetime.utcnow() # Use UTC for comparison with stored timestamps
 
         # Query the database for active alerts for the specified location
-        # Filter by location (case-insensitive) and ensure the alert is currently effective
         stmt = select(WeatherAlert).where(
             WeatherAlert.location.ilike(f"%{location}%"), # Case-insensitive search
             WeatherAlert.effective_time <= now,
             WeatherAlert.expires_time >= now
         )
         
-        result = await session.exec(stmt)
-        alerts = result.scalars().all() # Get all matching alert objects
+        
+        result = session.exec(stmt)
+        alerts = result.all() # This should be correct. No await here.
 
         if not alerts:
             return f"END No active weather alerts found for {location}."
         
         alert_messages = []
         alert_messages.append(f"END Active Weather Alerts for {location}:")
+        
         for alert in alerts:
-            # Format each alert nicely using fields from your WeatherAlert model
             alert_messages.append(
-                f"- **{alert.alert_type}** ({alert.severity}, {alert.urgency_level}): {alert.alert_message}"
-                f"\n Effective: {alert.effective_time.strftime('%Y-%m-%d %H:%M UTC')}"
-                f"\n Expires: {alert.expires_time.strftime('%Y-%m-%d %H:%M UTC')}"
+                f"- {alert.alert_type} ({alert.severity}): {alert.alert_message}"
+                f"\n  Valid: {alert.effective_time.strftime('%b %d %H:%M UTC')} - {alert.expires_time.strftime('%b %d %H:%M UTC')}"
             )
         
-        # Concatenate messages, ensuring they fit within USSD character limits if needed
-        # (A single alert might be long, consider truncating or paginating for production)
         return "\n".join(alert_messages)
 
     except Exception as e:
-        print(f"Error fetching alerts from database: {traceback.format_exc()}")
-        # Do NOT expose raw exception details to the user in a production environment
-        return "END Failed to retrieve weather alerts. Please try again later."
+        print(f"Error fetching alerts from database in format_alert_response: {traceback.format_exc()}")
+        return f"END Failed to retrieve weather alerts. Please try again later.{traceback.format_exc()}"
