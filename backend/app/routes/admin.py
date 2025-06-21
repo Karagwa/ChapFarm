@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlmodel import Session, select
+from sqlmodel import Session, select, func
 from typing import List
 
-from app.models import AgricultureAuthority, TransportProvider, TransportRequest, User, Farmer, UserRole
-from app.schemas import UserCreate, UserRead, FarmerCreate, TransportProviderCreate, AgricultureAuthorityCreate, AdminCreate
+from app.models import AgricultureAlert, AgricultureAuthority, FarmerReport, TransportProvider, TransportRequest, User, Farmer, UserRole, WeatherAlert
+from app.schemas import AdminDashboardSummaryResponse, UserCreate, UserRead, FarmerCreate, TransportProviderCreate, AgricultureAuthorityCreate, AdminCreate, RecentReportResponse, RecentActivityResponse
 from app.database import get_session
 from app.auth.security import hash_password
 from app.auth.jwt_handler import decode_access_token, require_admin, require_transport_provider
@@ -220,23 +220,86 @@ def deactivate_user(user_id: int, session: Session = Depends(get_session),
     session.commit()
     return {"message": "User deactivated"}
 
-# 
-@router.get("/dashboard/summary")
-def get_dashboard_summary(session: Session = Depends(get_session), 
-                          admin_user: User = Depends(require_admin)):
-    total_users = session.exec(select(User)).all()
-    total_farmers = session.exec(select(Farmer)).all()
-    total_transport_providers = session.exec(select(TransportProvider)).all()
-    total_authorities = session.exec(select(AgricultureAuthority)).all()
-    total_transport_requests = session.exec(select(TransportRequest)).all()
 
-    return {
-        "total_users": len(total_users),
-        "total_farmers": len(total_farmers),
-        "total_transport_providers": len(total_transport_providers),
-        "total_agriculture_authorities": len(total_authorities),
-        "total_transport_requests": len(total_transport_requests)
-    }
+
+@router.get(
+    "/dashboard/summary",
+    response_model=AdminDashboardSummaryResponse
+)
+def get_dashboard_summary(
+    session: Session = Depends(get_session),
+    admin_user: User = Depends(require_admin)
+):
+    """
+    Retrieves summary statistics for the admin dashboard.
+    Requires admin authentication.
+    """
+    try:
+        # Use func.count() for efficient counting
+        registered_users = session.exec(
+            select(func.count(User.id))
+        ).one()
+        
+        registered_farmers = session.exec(
+            select(func.count(Farmer.id))
+        ).one()
+        
+        registered_transport_providers = session.exec(
+            select(func.count(TransportProvider.id))
+        ).one()
+        
+        registered_authorities = session.exec(
+            select(func.count(AgricultureAuthority.id))
+        ).one()
+        
+        total_reports = session.exec(
+            select(func.count(FarmerReport.id))
+        ).one()
+        
+        pending_reports = session.exec(
+            select(func.count(FarmerReport.id)).where(
+                FarmerReport.status == "pending"
+            )
+        ).one()
+        
+        total_transport_requests = session.exec(
+            select(func.count(TransportRequest.id))
+        ).one()
+        
+        pending_transport_requests = session.exec(
+            select(func.count(TransportRequest.id)).where(
+                TransportRequest.status == "pending"
+            )
+        ).one()
+        
+        total_weather_alerts = session.exec(
+            select(func.count(WeatherAlert.id))
+        ).one()
+        
+        total_agriculture_alerts = session.exec(
+            select(func.count(AgricultureAlert.id))
+        ).one()
+
+        # Return with field names matching the schema
+        return AdminDashboardSummaryResponse(
+            registered_users=registered_users,
+            registered_farmers=registered_farmers,
+            registered_transport_providers=registered_transport_providers,
+            registered_authorities=registered_authorities,
+            total_reports=total_reports,
+            pending_reports=pending_reports,
+            total_transport_requests=total_transport_requests,
+            pending_transport_requests=pending_transport_requests,
+            total_weather_alerts=total_weather_alerts,
+            total_agriculture_alerts=total_agriculture_alerts
+        )
+        
+    except Exception as e:
+        print(f"Error in get_dashboard_summary: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to retrieve dashboard summary: {str(e)}"
+        )
 
 @router.get("/farmers")
 def list_farmers(session: Session = Depends(get_session), admin_user: User = Depends(require_admin)):
@@ -249,3 +312,79 @@ def list_transport_providers(session: Session = Depends(get_session), admin_user
 @router.get("/agriculture-authorities")
 def list_agriculture_authorities(session: Session = Depends(get_session), admin_user: User = Depends(require_admin)):
     return session.exec(select(AgricultureAuthority)).all()
+
+@router.get("/recent-reports")
+def get_recent_reports(
+    limit: int = 10,
+    session: Session = Depends(get_session),
+    admin_user: User = Depends(require_admin)
+) -> List[RecentReportResponse]:
+    """Get recent farmer reports"""
+    reports = session.exec(
+        select(FarmerReport, Farmer.name, Farmer.phone)
+        .join(Farmer, FarmerReport.farmer_id == Farmer.id)
+        .order_by(FarmerReport.timestamp.desc())
+        .limit(limit)
+    ).all()
+    
+    return [
+        RecentReportResponse(
+            id=report.FarmerReport.id,
+            farmer_name=report.name,
+            issue_type=report.FarmerReport.issue_type,
+            description=report.FarmerReport.description,
+            location=report.FarmerReport.location,
+            status=report.FarmerReport.status,
+            date=report.FarmerReport.timestamp.strftime("%d/%m/%Y"),
+            phone=report.phone
+        )
+        for report in reports
+    ]
+
+@router.get("/recent-activity")
+def get_recent_activity(
+    limit: int = 10,
+    session: Session = Depends(get_session),
+    admin_user: User = Depends(require_admin)
+) -> List[RecentActivityResponse]:
+    """Get recent system activity"""
+    
+    # Get recent user registrations
+    recent_users = session.exec(
+        select(User)
+        .order_by(User.created_at.desc())
+        .limit(5)
+    ).all()
+    
+    # Get recent report resolutions
+    recent_resolved = session.exec(
+        select(FarmerReport, Farmer.name)
+        .join(Farmer, FarmerReport.farmer_id == Farmer.id)
+        .where(FarmerReport.status == "resolved")
+        .order_by(FarmerReport.timestamp.desc())
+        .limit(5)
+    ).all()
+    
+    activities = []
+    
+    # Add user registrations to activity
+    for user in recent_users:
+        activities.append(RecentActivityResponse(
+            user=f"Admin User",
+            activity=f"Created user account - {user.role.title()}",
+            date=user.created_at.strftime("%d/%m/%Y"),
+            timestamp=user.created_at
+        ))
+    
+    # Add resolved reports to activity
+    for report in recent_resolved:
+        activities.append(RecentActivityResponse(
+            user="Agricultural Authority",
+            activity=f"Resolved issue - {report.FarmerReport.issue_type} report from {report.name}",
+            date=report.FarmerReport.timestamp.strftime("%d/%m/%Y"),
+            timestamp=report.FarmerReport.timestamp
+        ))
+    
+    # Sort by timestamp and return latest
+    activities.sort(key=lambda x: x.timestamp, reverse=True)
+    return activities[:limit]

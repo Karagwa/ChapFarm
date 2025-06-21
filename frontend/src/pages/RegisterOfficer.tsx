@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../components/layouts/AdminLayout';
 import { adminService } from '../services/adminService';
+import { toast } from 'react-toastify';
 
 const RegisterOfficer = () => {
   const [form, setForm] = useState({
@@ -15,14 +17,8 @@ const RegisterOfficer = () => {
     role: 'agricultural_authority',
   });
 
-  // class AgricultureAuthorityCreate(BaseModel):
-  //   institution_name: str
-  //   name: str
-  //   phone: str
-  //   location: str
-  //   username: str
-  //   email: EmailStr
-  //   password: str
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -30,6 +26,7 @@ const RegisterOfficer = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       const response = await adminService.registerAuthority({
         institution_name: form.institution_name,
@@ -41,10 +38,48 @@ const RegisterOfficer = () => {
         password: form.password,
       });
       console.log('Registration successful:', response);
-      // Optionally redirect or show success message
-    } catch (error) {
+      // show success message or redirect user
+      setForm({
+        institution_name: '',
+        name: '',
+        phone: '',
+        location: '',
+        username: '',
+        email: '',
+        password: '',
+        role: 'agricultural_authority',
+      });
+
+      // Show success toast
+      toast.success('Agricultural Officer registered successfully!', {
+        autoClose: 4000,
+        position: 'top-right',
+      });
+
+      // Redirect after 2 seconds
+      setTimeout(() => {
+        navigate('/admin');
+      }, 2000);
+
+    } catch (error: any) {
       console.error('Registration failed:', error);
-      // Handle error (e.g., show error message to user)
+      
+      // Show specific error message
+      const errorMessage = error.response?.data?.detail || 'Registration failed. Please try again.';
+      
+      if (errorMessage.includes('already exists')) {
+        toast.error('This email is already registered. Please use a different email address.', {
+          autoClose: 5000,
+          position: 'top-right',
+        });
+      } else {
+        toast.error(errorMessage, {
+          autoClose: 4000,
+          position: 'top-right',
+        });
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

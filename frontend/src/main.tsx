@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import HomePage from './pages/HomePage' // or wherever your main component is
 import AboutPage from "./pages/AboutPage";
 import LoginPage from './pages/LogInPage';
@@ -19,20 +21,26 @@ import MessagingPage from './pages/MessagingPage';
 import AlertsPage from './pages/AlertsPage';
 import AuthMessagesPage from './pages/AuthMessagesPage';
 import AnalyticsPage from './pages/AnalysisDashboard';
+import { registerCharts } from './pages/charts_config';
 
+const App = () => {
+  // This is the key part for Chart.js registration
+  useEffect(() => {
+    registerCharts(); // Call your function to register Chart.js components
+    console.log('Chart.js components registered globally in App component.');
+  }, []); 
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+  return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
-         <Route path="/login" element={<LoginPage />} />
-         <Route path="/register" element={<RegisterPage />} />
-         <Route path="/contact" element={<ContactPage />} />
-         <Route path="/admin" element={<AdminDashboard />} />
-         <Route path="/authority" element={<AuthorityDashboard />} />
-         <Route path="/transport" element={<TransportDashboard />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/authority" element={<AuthorityDashboard />} />
+        <Route path="/transport" element={<TransportDashboard />} />
         <Route path="/admin/farmer-reports" element={<FarmerReports />} />
         <Route path="/admin/register-admin" element={<RegisterAdmin />} />
         <Route path="/admin/register-officer" element={<RegisterOfficer />} />
@@ -43,6 +51,26 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path="/authority/analysis" element={<AnalyticsPage />} />
         <Route path="/admin/alerts" element={<AlertsPage/>} />
       </Routes>
+      {/* Global Toast Container */}
+      <ToastContainer
+        position="top-right"
+        autoClose={4000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        style={{ zIndex: 9999 }}
+      />
     </BrowserRouter>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
   </React.StrictMode>
 )

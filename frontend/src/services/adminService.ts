@@ -49,8 +49,16 @@ export const adminService = {
     },
 
   getDashboardSummary: async () => {
-    const res = await axios.get(`${API_BASE_URL}/admin/dashboard/summary`);
-    return res.data;
+    const token = authService.getToken();
+    return await axios.get(
+      `${API_BASE_URL}/admin/dashboard/summary`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // 🔐 Send the token here
+        },
+
+      }
+    ).then(res => res.data);
   },
 
   listFarmers: async () => {
@@ -66,5 +74,30 @@ export const adminService = {
   listAuthorities: async () => {
     const res = await axios.get(`${API_BASE_URL}/admin/agriculture-authorities`);
     return res.data;
+  },
+  getRecentReports: async () => {
+    const token = authService.getToken();
+    const response = await axios.get(
+      `${API_BASE_URL}/admin/recent-reports`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  },
+
+  getRecentActivity: async () => {
+    const token = authService.getToken();
+    const response = await axios.get(
+      `${API_BASE_URL}/admin/recent-activity`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
   },
 };

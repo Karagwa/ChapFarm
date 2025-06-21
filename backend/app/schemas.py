@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 
@@ -83,3 +84,37 @@ class SMSRequest(BaseModel):
     to: str
     message: str
     from_: str = "your_sender_id_here"
+    
+class AdminDashboardSummaryResponse(BaseModel):
+    registered_users: int
+    registered_farmers: int
+    registered_authorities: int
+    registered_transport_providers: int
+    total_reports: int
+    pending_reports: int
+    total_transport_requests: int
+    pending_transport_requests: int
+    total_weather_alerts: int
+    total_agriculture_alerts: int
+class RecentReportResponse(BaseModel):
+    id: int
+    farmer_name: str
+    issue_type: str
+    description: str
+    location: str
+    status: str
+    date: str
+    phone: str
+
+class RecentActivityResponse(BaseModel):
+    user: str
+    activity: str
+    date: str
+    timestamp: datetime
+    
+
+    
+    class Config:
+        from_attributes = True
+        
+

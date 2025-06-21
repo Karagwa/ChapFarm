@@ -95,17 +95,32 @@ export interface RegisterResponse {
 }
 
 export interface DashboardSummary {
-  total_users: number;
-  total_farmers: number;
-  total_transport_providers: number;
-  total_agriculture_authorities: number;
+  registered_users: number;
+  registered_farmers: number;
+  registered_authorities: number;
+  registered_transport_providers: number;
+  total_reports: number;
+  pending_reports: number;
   total_transport_requests: number;
+  pending_transport_requests: number;
+  total_weather_alerts: number;
+  total_agriculture_alerts: number;
 }
-export interface TransportRequest {
+
+export interface RecentReport {
   id: number;
-  farmer_id: number;
-  transport_provider_id: number;
-  status: 'pending' | 'accepted' | 'rejected' | 'completed';
-  created_at: string;
-  updated_at: string;
+  farmer_name: string;
+  issue_type: string;
+  description: string;
+  location: string;
+  status: string;
+  date: string;
+  phone: string;
+}
+
+export interface RecentActivity {
+  user: string;
+  activity: string;
+  date: string;
+  timestamp: string;
 }
