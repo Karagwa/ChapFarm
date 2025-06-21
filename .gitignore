@@ -61,3 +61,10 @@ backend/app.db
 node_modules/
 .vite/
 dist/
+
+# Python virtual environment
+backend/venv/
+
+# Node.js dependencies
+frontend/node_modules/
+frontend/.vite/  # Vite cache
