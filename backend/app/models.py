@@ -156,5 +156,13 @@ class TransportRequest(SQLModel, table=True):
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
     farmer: Optional[Farmer] = Relationship(back_populates="transport_requests")
-    
-    
+
+class AlertRequest(BaseModel):
+    title: str
+    alert_type: str
+    severity: str
+    region: str
+    message: str
+    delivery_time: str
+
+
