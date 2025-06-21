@@ -1,11 +1,26 @@
 # app/scripts/create_super_admin.py
+import sys
+import os
+from pathlib import Path
+# Add the backend directory to Python path
+backend_dir = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(backend_dir))
 
+try:
+    from app.models import Admin, User
+    from app.database import get_session
+    
+    from app.schemas import UserRole
+except ImportError as e:
+    print(f"Import error: {e}")
+    print("Please ensure you're running from the backend directory")
+    sys.exit(1)
 import typer
 from sqlmodel import Session, SQLModel, create_engine, select
 from datetime import datetime, timedelta
 from getpass import getpass
-from app.models import Admin, User
-from app.schemas import UserRole
+# from app.models import Admin, User
+# from app.schemas import UserRole
 from passlib.context import CryptContext
 
 # --- Typer App ---
