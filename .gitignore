@@ -52,3 +52,5 @@ yarn.lock
 # === OS / System ===
 .DS_Store
 Thumbs.db
+backend/app.db
+*.db
