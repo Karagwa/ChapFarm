@@ -1,13 +1,51 @@
 import React, { useState } from 'react';
-import AdminLayout from '../components/layouts/AdminLayout';
+import AdminLayout from '../components/layouts/AuthorityLayout';
+import { Phone } from 'lucide-react';
 
 const AlertsPage = () => {
   const [alertTitle, setAlertTitle] = useState('');
   const [alertType, setAlertType] = useState('Weather Alert');
   const [severity, setSeverity] = useState('Medium');
-  const [region, setRegion] = useState('All');
   const [message, setMessage] = useState('');
   const [deliveryTime, setDeliveryTime] = useState('immediate');
+  const [phoneNumbersInput, setPhoneNumbersInput] = useState('');
+  const [region, setRegion] = useState('All');
+
+  // Helper to parse phone numbers from textarea
+  const parsePhoneNumbers = (input) => {
+    return input
+      .split(/[\n,]+/)
+      .map(num => num.trim())
+      .filter(num => num.length > 0);
+  };
+
+  const handleSendAlert = async () => {
+    // No phone number check needed!
+    const payload = {
+      title: alertTitle,
+      alert_type: alertType,
+      severity,
+      region, // <-- send region only
+      message,
+      delivery_time: deliveryTime,
+    };
+
+    try {
+      const response = await fetch('http://localhost:8000/alerts/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+      if (data.status === "success") {
+        alert("Alert sent successfully!");
+      } else {
+        alert("Failed to send alert: " + data.detail);
+      }
+    } catch (err) {
+      alert("Error sending alert: " + err.message);
+    }
+  };
 
   return (
     <AdminLayout>
@@ -39,8 +77,9 @@ const AlertsPage = () => {
           {/* Alert Type and Severity */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Alert Type</label>
+              <label htmlFor="alert-type" className="block text-sm font-medium text-gray-700 mb-1">Alert Type</label>
               <select
+                id="alert-type"
                 value={alertType}
                 onChange={(e) => setAlertType(e.target.value)}
                 className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
@@ -52,8 +91,9 @@ const AlertsPage = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Severity Level</label>
+              <label htmlFor="severity-level" className="block text-sm font-medium text-gray-700 mb-1">Severity Level</label>
               <select
+                id="severity-level"
                 value={severity}
                 onChange={(e) => setSeverity(e.target.value)}
                 className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
@@ -67,8 +107,9 @@ const AlertsPage = () => {
 
           {/* Target Region */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Target Regions</label>
+            <label htmlFor="target-region" className="block text-sm font-medium text-gray-700 mb-1">Target Region</label>
             <select
+              id="target-region"
               value={region}
               onChange={(e) => setRegion(e.target.value)}
               className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
@@ -79,7 +120,7 @@ const AlertsPage = () => {
               <option>Northern</option>
               <option>Western</option>
             </select>
-            <p className="text-xs text-gray-500 mt-1">Select 'All' to target farmers across Uganda</p>
+            <p className="text-xs text-gray-500 mt-1">Select 'All' to target all farmers</p>
           </div>
 
           {/* Message */}
@@ -122,7 +163,10 @@ const AlertsPage = () => {
             </div>
           </div>
 
-          <button className="w-full bg-green-600 text-white py-2 rounded font-semibold text-sm hover:bg-green-700">
+          <button
+            onClick={handleSendAlert}
+            className="w-full bg-green-600 text-white py-2 rounded font-semibold text-sm hover:bg-green-700"
+          >
             ⚠️ Preview Alert
           </button>
         </div>

@@ -46,8 +46,9 @@ const MessagingPage = () => {
             <p className="text-sm text-gray-500 mb-4">Send a message to an individual farmer</p>
 
             <div className="mb-4">
-              <label className="text-sm font-medium text-gray-700 block mb-1">Select Farmer</label>
+              <label htmlFor="farmer-select" className="text-sm font-medium text-gray-700 block mb-1">Select Farmer</label>
               <select
+                id="farmer-select"
                 className="w-full border border-gray-300 rounded px-3 py-2"
                 value={selectedFarmer}
                 onChange={(e) => setSelectedFarmer(e.target.value)}

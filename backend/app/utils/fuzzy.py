@@ -1,8 +1,9 @@
 from rapidfuzz import process, fuzz
 from sqlmodel import select
 from app.models import Advice
+from typing import Optional
 
-def find_similar_advice(session, user_input: str, threshold: int = 85) -> str | None:
+def find_similar_advice(session, user_input: str, threshold: int = 85) -> Optional[str]:
     """Search for a similar previous query using fuzzy matching."""
     existing_advice = session.exec(select(Advice)).all()
     queries = [advice.query_text for advice in existing_advice]

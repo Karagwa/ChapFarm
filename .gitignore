@@ -9,6 +9,8 @@ backend/app.db
 .venv/
 myenv/
 *.log
+backend/venv/ 
+venv/
 
 # VS Code settings
 .vscode/
@@ -54,3 +56,7 @@ yarn.lock
 Thumbs.db
 backend/app.db
 *.db
+
+node_modules/
+.vite/
+dist/

@@ -1,12 +1,8 @@
 import React from 'react';
 import { Truck, ClipboardList, Clock, LogOut } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import TransportLayout from '../components/layouts/TransportLayout';
 
-const menu = [
-  { label: 'Dashboard', icon: <Truck className="w-5 h-5 mr-2" />, path: '/transport' },
-  { label: 'Requests', icon: <ClipboardList className="w-5 h-5 mr-2" />, path: '/transport/requests' },
-  { label: 'History', icon: <Clock className="w-5 h-5 mr-2" />, path: '/transport/history' },
-  { label: 'Logout', icon: <LogOut className="w-5 h-5 mr-2" />, path: '/' },
-];
 
 const TransportDashboard = () => {
   // Mock user role check — replace with real auth logic
@@ -17,21 +13,8 @@ const TransportDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
-      {/* Sidebar */}
-      <aside className="w-64 bg-chapfarm-700 text-white p-6 space-y-4">
-        <h2 className="text-xl font-bold mb-6">Transport Panel</h2>
-        {menu.map((item, index) => (
-          <a
-            key={index}
-            href={item.path}
-            className="flex items-center text-sm font-medium hover:bg-chapfarm-600 px-3 py-2 rounded transition"
-          >
-            {item.icon}
-            {item.label}
-          </a>
-        ))}
-      </aside>
+    <TransportLayout>
+    <div className="min-h-screen flex bg-gray-50"> 
 
       {/* Main content */}
       <main className="flex-1 p-8">
@@ -54,22 +37,25 @@ const TransportDashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <button className="w-full bg-chapfarm-600 hover:bg-chapfarm-700 text-white py-2 rounded font-medium transition">
-              View New Requests
-            </button>
-            <button className="w-full bg-chapfarm-600 hover:bg-chapfarm-700 text-white py-2 rounded font-medium transition">
-              Update Trip Status
-            </button>
-            <button className="w-full bg-chapfarm-600 hover:bg-chapfarm-700 text-white py-2 rounded font-medium transition">
-              View Delivery History
-            </button>
-          </div>
-        </div>
+       
+
+<div className="flex flex-col gap-4">
+  <Link to="/transport/requests">
+    <button className="w-full bg-chapfarm-600 hover:bg-chapfarm-700 text-white py-2 rounded font-medium transition">
+      View New Requests
+    </button>
+  </Link>
+
+  <Link to="/transport/history">
+    <button className="w-full bg-chapfarm-600 hover:bg-chapfarm-700 text-white py-2 rounded font-medium transition">
+      View Delivery History
+    </button>
+  </Link>
+</div>
+
       </main>
     </div>
+    </TransportLayout>
   );
 };
 

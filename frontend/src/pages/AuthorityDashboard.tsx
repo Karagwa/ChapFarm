@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import AuthorityLayout from '../components/layouts/AuthorityLayout';
 
 const AuthorityDashboard = () => {
@@ -11,6 +12,7 @@ const AuthorityDashboard = () => {
       </div>
     );
   }
+
 
   return (
     <AuthorityLayout>
@@ -33,20 +35,25 @@ const AuthorityDashboard = () => {
       </div>
 
       {/* Action Panel */}
-      <div className="mt-12 bg-white rounded shadow p-6">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
-        <div className="flex flex-col sm:flex-row gap-4">
-          <button className="w-full bg-chapfarm-600 hover:bg-chapfarm-700 text-white font-medium py-2 rounded-md">
-            Review Reports
-          </button>
-          <button className="w-full bg-chapfarm-600 hover:bg-chapfarm-700 text-white font-medium py-2 rounded-md">
-            Send Alert to Region
-          </button>
-          <button className="w-full bg-chapfarm-600 hover:bg-chapfarm-700 text-white font-medium py-2 rounded-md">
-            Compose Advisory
-          </button>
-        </div>
-      </div>
+     <div className="mt-12 bg-white rounded shadow p-6">
+  <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
+  <div className="flex flex-col sm:flex-row gap-4">
+    
+    <Link to="/authority/farmer-reports" className="w-full">
+      <button className="w-full bg-chapfarm-600 hover:bg-chapfarm-700 text-white font-medium py-2 rounded-md">
+        Review Reports
+      </button>
+    </Link>
+
+    <Link to="/authority/alerts" className="w-full">
+      <button className="w-full bg-chapfarm-600 hover:bg-chapfarm-700 text-white font-medium py-2 rounded-md">
+        Send Alert to Region
+      </button>
+    </Link>
+
+  </div>
+</div>
+
     </AuthorityLayout>
   );
 };
