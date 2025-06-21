@@ -1,13 +1,32 @@
 // src/components/AuthoritySidebar.tsx
 import React from 'react';
-import { CheckCircle, AlertTriangle, MessageSquare, LogOut } from 'lucide-react';
+import { CheckCircle, AlertTriangle, MessageSquare, LogOut, Bell, Truck, AlertCircle } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 const authorityMenu = [
   { label: 'Dashboard', icon: <CheckCircle className="w-5 h-5 mr-2" />, path: '/authority' },
-  { label: 'Reports', icon: <AlertTriangle className="w-5 h-5 mr-2" />, path: '/authority/reports' },
-  { label: 'Messages', icon: <MessageSquare className="w-5 h-5 mr-2" />, path: '/authority/messages' },
-  { label: 'Analysis', icon: <AlertTriangle className="w-5 h-5 mr-2" />, path: '/authority/analysis' },
+  
+   {
+    label: 'Farmer Reports',
+    icon: <AlertCircle className="w-5 h-5 mr-2" />,
+    path: '/authority/farmer-reports',
+  },
+  {
+    label: 'Transport Requests',
+    icon: <Truck className="w-5 h-5 mr-2" />,
+    path: '/authority/transport-request',
+  },
+  {
+    label: 'Messaging',
+    icon: <MessageSquare className="w-5 h-5 mr-2" />,
+    path: '/authority/messages',
+  },
+  {
+    label: 'Alerts',
+    icon: <Bell className="w-5 h-5 mr-2" />,
+    path: '/authority/alerts',
+  },
+  
   { label: 'Logout', icon: <LogOut className="w-5 h-5 mr-2" />, path: '/' },
 ];
 

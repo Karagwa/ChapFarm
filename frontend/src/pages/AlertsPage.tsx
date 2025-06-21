@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import AdminLayout from '../components/layouts/AdminLayout';
+import AdminLayout from '../components/layouts/AuthorityLayout';
 import { Phone } from 'lucide-react';
 
 const AlertsPage = () => {

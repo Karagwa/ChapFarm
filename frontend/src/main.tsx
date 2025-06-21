@@ -21,6 +21,11 @@ import MessagingPage from './pages/MessagingPage';
 import AlertsPage from './pages/AlertsPage';
 import AuthMessagesPage from './pages/AuthMessagesPage';
 import AnalyticsPage from './pages/AnalysisDashboard';
+import AuthFarmerReport from './pages/AuthFarmerReports';
+import AuthTransportRequests from './pages/AuthTransportRequests';
+import AllUsersPage from './pages/AllUserPage';
+import RequestView from './pages/RequestsView';
+import TransportHistoryPage from './pages/TransportHistory'
 import { registerCharts } from './pages/charts_config';
 
 const App = () => {
@@ -46,10 +51,15 @@ const App = () => {
         <Route path="/admin/register-officer" element={<RegisterOfficer />} />
         <Route path="/admin/register-transport" element={<RegisterTransportProvider />} />
         <Route path="/admin/transport-request" element={<TransportRequestsPage />} />
-        <Route path="/admin/messages" element={<MessagingPage/>} />
+        <Route path="/admin/users" element={<AllUsersPage />} />
+        <Route path="/admin/messages" element={<MessagingPage/>} /> 
         <Route path="/authority/messages" element={<AuthMessagesPage />} />
         <Route path="/authority/analysis" element={<AnalyticsPage />} />
-        <Route path="/admin/alerts" element={<AlertsPage/>} />
+        <Route path="/authority/farmer-reports" element={<AuthFarmerReport/>}/>
+        <Route path="/authority/transport-request" element={<AuthTransportRequests/>}/>
+        <Route path="/authority/alerts" element={<AlertsPage/>} />
+        <Route path="/transport/requests" element={<RequestView/>} />
+        <Route path="/transport/history" element={<TransportHistoryPage/>} />
       </Routes>
       {/* Global Toast Container */}
       <ToastContainer
