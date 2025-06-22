@@ -7,8 +7,8 @@ import africastalking
 
 # Initialize Africa's Talking
 africastalking.initialize(
-    username='ChapFarm',
-    api_key='atsk_00da9686a7c2d10bf5a47bded0a7a56e79350ec9b5d5dcb863701026382b154c7bb8d547'
+    username='sandbox',
+    api_key='atsk_ed7ac825ff115627674527ffb114b2c2382ffbb6874ed0957cbbab1efa2b81ad4308e5ed'
 )
 sms = africastalking.SMS
 
@@ -35,7 +35,7 @@ def send_alert(alert: AlertRequest, session: Session = Depends(get_session)):
         result = sms.send(
             f"{alert.title}\n{alert.message}",
             phone_numbers,
-            sender_id="7788"
+            sender_id="78954"
         )
         return {"status": "success", "result": result}
     except Exception as ex:

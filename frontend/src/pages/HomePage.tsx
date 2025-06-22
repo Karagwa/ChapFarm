@@ -7,6 +7,7 @@ import Footer from '../components/Footer';
 import StatCard from '../components/StatCard';
 import FeatureCard from '../components/FeatureCard';
 import SectionDivider from '../components/SectionDivider';
+import video1 from '../assets/video1.mp4';
 
 
 const HomePage = () => {
@@ -30,7 +31,7 @@ const HomePage = () => {
                   Learn More <ArrowRight className="ml-2" size={16} />
                 </Button>
               </Link>
-              <Link to="/register">
+              <Link to="/login">
                 <Button className="w-full sm:w-auto bg-chapfarm-500 hover:bg-chapfarm-600 font-medium">
                   Get Started
                 </Button>
@@ -38,10 +39,13 @@ const HomePage = () => {
             </div>
           </div>
           <div className="md:w-1/2 flex justify-center animate-slide-in">
-            <img 
-              src="https://images.unsplash.com/photo-1594312064072-35fa353cb679?q=80&w=600&auto=format" 
-              alt="Ugandan Farmer" 
-              className="rounded-xl shadow-2xl max-w-full object-cover h-[400px] border-4 border-white/20 hover:scale-[1.02] transition-transform duration-300" 
+            <video
+              src={video1}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="rounded-xl shadow-2xl max-w-full object-cover h-[400px] border-4 border-white/20 hover:scale-[1.02] transition-transform duration-300"
             />
           </div>
         </div>
@@ -92,7 +96,7 @@ const HomePage = () => {
           </div>
           
           <div className="mt-12 text-center">
-            <Link to="/services">
+            <Link to="/about">
               <Button variant="outline" className="border-chapfarm-600 text-chapfarm-700 hover:bg-chapfarm-50">
                 Explore All Features <ArrowRight className="ml-2" size={16} />
               </Button>
@@ -175,11 +179,7 @@ const HomePage = () => {
             Become part of our network of agricultural authorities and transport providers helping Ugandan farmers adapt to climate change.
           </p>
           <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <Link to="/register">
-              <Button className="bg-white text-chapfarm-700 hover:bg-gray-100 font-medium w-full sm:w-auto">
-                Sign Up Now
-              </Button>
-            </Link>
+            
             <Link to="/contact">
               <Button variant="outline" className="border-white text-white hover:bg-chapfarm-600 w-full sm:w-auto">
                 Contact Us
