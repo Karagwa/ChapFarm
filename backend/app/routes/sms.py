@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 import africastalking
 
-from ..models import AlertRequest, Farmer
+from ..models import AlertRequest, Farmer, AgricultureAlert
 from ..database import get_session
 
 # Initialize Africa's Talking

@@ -1,5 +1,6 @@
 aiosmtplib==4.0.1
 boto3==1.38.18
+email-validator
 fastapi==0.115.12
 httpx==0.28.1
 passlib==1.7.4
@@ -12,4 +13,5 @@ sqlmodel==0.0.24
 typer==0.16.0
 uvicorn==0.23.2
 africastalking
+python-multipart
 
