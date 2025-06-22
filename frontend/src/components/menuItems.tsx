@@ -2,20 +2,25 @@ import React from 'react';
 import {
   Home,
   Users,
-  AlertCircle,
-  Truck,
-  MessageSquare,
-  Bell,
-  Activity,
   LogOut,
-  BarChart2,
+  Shield,
+  UserCheck,
+  Truck,
 } from 'lucide-react';
 
 interface MenuItem {
   label: string;
   icon: React.ReactElement;
   path?: string;
-  children?: { label: string; path: string }[];
+  children?: {
+    label: string;
+    path: string;
+    icon?: React.ReactElement;
+    badge?: string;
+    color?: string;
+    badgeColor?: string;
+    isNew?: boolean;
+  }[];
 }
 
 const menuItems: MenuItem[] = [
@@ -28,42 +33,37 @@ const menuItems: MenuItem[] = [
     label: 'Register',
     icon: <Users className="w-5 h-5 mr-2" />,
     children: [
-      { label: 'Admin', path: '/admin/register-admin' },
-      { label: 'Officer', path: '/admin/register-officer' },
-      { label: 'Transport Provider', path: '/admin/register-transport' },
+      {
+        label: 'Admin',
+        path: '/admin/register-admin',
+        icon: <Shield className="w-4 h-4 mr-2" />,
+        color: 'text-purple-200',
+        //badge: 'Super',
+        badgeColor: 'bg-purple-500 bg-opacity-80 text-white',
+      },
+      {
+        label: 'Officer',
+        path: '/admin/register-officer',
+        icon: <UserCheck className="w-4 h-4 mr-2" />,
+        color: 'text-blue-200',
+        //badge: 'Auth',
+        badgeColor: 'bg-blue-500 bg-opacity-80 text-white',
+      },
+      {
+        label: 'Transport Provider',
+        path: '/admin/register-transport',
+        icon: <Truck className="w-4 h-4 mr-2" />,
+        color: 'text-green-200',
+        //badge: 'Service',
+        badgeColor: 'bg-green-500 bg-opacity-80 text-white',
+      },
     ],
   },
-  {
-    label: 'Farmer Reports',
-    icon: <AlertCircle className="w-5 h-5 mr-2" />,
-    path: '/admin/farmer-reports',
-  },
-  {
-    label: 'Transport Requests',
-    icon: <Truck className="w-5 h-5 mr-2" />,
-    path: '/admin/transport-request',
-  },
-  {
-      label: 'Messaging',
-      icon: <MessageSquare className="w-5 h-5 mr-2" />,
-      path: '/admin/messages',
-    },
-  
   {
     label: 'Users',
     icon: <Users className="w-5 h-5 mr-2" />,
     path: '/admin/users',
   },
-  // {
-  //   label: 'Activity Logs',
-  //   icon: <Activity className="w-5 h-5 mr-2" />,
-  //   path: '/admin/activity',
-  // },
-  // {
-  //   label: 'Analytics',
-  //   icon: <BarChart2 className="w-5 h-5 mr-2" />,
-  //   path: '/admin/analytics',
-  // },
   {
     label: 'Logout',
     icon: <LogOut className="w-5 h-5 mr-2" />,

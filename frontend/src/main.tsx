@@ -58,7 +58,7 @@ const App = () => {
         <Route path="/authority/farmer-reports" element={<AuthFarmerReport/>}/>
         <Route path="/authority/transport-request" element={<AuthTransportRequests/>}/>
         <Route path="/authority/alerts" element={<AlertsPage/>} />
-        <Route path="/transport/requests" element={<RequestView/>} />
+        <Route path="/transport/requests" element={<RequestView />} />
         <Route path="/transport/history" element={<TransportHistoryPage/>} />
       </Routes>
       {/* Global Toast Container */}

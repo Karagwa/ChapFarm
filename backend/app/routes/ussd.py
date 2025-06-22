@@ -272,10 +272,10 @@ You can now access full features."""
             else:
                 new_transport_request = TransportRequest(
                     farmer_id=db_session.farmer_id,
-                    pickup_location=pickup_location,
-                    destination=delivery_location,
-                    cargo_type=transport_type,
-                    status="pending"
+                    transport_type=transport_type,  # Matching database column name 'transport_type'
+                    pickup_location=pickup_location,  # Matching database column name 'pickup_location'
+                    dropoff_location=delivery_location,  # Matching database column name 'dropoff_location'
+                    status="Pending"  # Explicitly setting status as per previous log
                 )
                 session.add(new_transport_request)
                 # session.commit() # Removed, commit at the end

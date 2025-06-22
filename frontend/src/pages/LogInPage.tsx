@@ -60,10 +60,10 @@ const LoginPage = () => {
         case 'admin':
           navigate('/admin', { replace: true });
           break;
-        case 'agriculture_authority':
-          navigate('/agriculture-authority', { replace: true });
+        case 'agricultural_authority':
+          navigate('/authority', { replace: true });
           break;
-        case 'transport':
+        case 'transport_provider':
           navigate('/transport', { replace: true });
           break;
         case 'farmer':

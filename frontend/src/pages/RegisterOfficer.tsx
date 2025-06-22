@@ -47,7 +47,7 @@ const RegisterOfficer = () => {
         username: '',
         email: '',
         password: '',
-        role: 'agricultural_authority',
+        role: 'agriculture_authority',
       });
 
       // Show success toast

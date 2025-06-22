@@ -11,16 +11,12 @@ const authorityMenu = [
     icon: <AlertCircle className="w-5 h-5 mr-2" />,
     path: '/authority/farmer-reports',
   },
-  {
-    label: 'Transport Requests',
-    icon: <Truck className="w-5 h-5 mr-2" />,
-    path: '/authority/transport-request',
-  },
-  {
-    label: 'Messaging',
-    icon: <MessageSquare className="w-5 h-5 mr-2" />,
-    path: '/authority/messages',
-  },
+  
+  // {
+  //   label: 'Messaging',
+  //   icon: <MessageSquare className="w-5 h-5 mr-2" />,
+  //   path: '/authority/messages',
+  // },
   {
     label: 'Alerts',
     icon: <Bell className="w-5 h-5 mr-2" />,

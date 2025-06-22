@@ -85,6 +85,6 @@ def require_transport_provider(user: User = Depends(get_current_user)) -> User:
     return user
 
 def require_agriculture_authority(user: User = Depends(get_current_user)) -> User:
-    if user.role != "agriculture_authority":
+    if user.role != "agricultural_authority":
         raise HTTPException(status_code=403, detail="Only agriculture authorities allowed")
     return user

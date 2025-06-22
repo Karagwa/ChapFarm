@@ -97,7 +97,7 @@ export const authService = {
     localStorage.removeItem('rememberMe');
   },
 
-  // Decode JWT token to get user info (optional)
+  
   getUserFromToken(): any {
     const token = this.getToken();
     if (!token) return null;

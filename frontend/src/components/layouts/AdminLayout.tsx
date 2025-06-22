@@ -1,12 +1,11 @@
 import React from 'react';
+import Sidebar from '../Sidebar';
+
 type AdminLayoutProps = {
   children: React.ReactNode;
 };
 
-import Sidebar from '../Sidebar';
-
-
-const AdminLayout = ({ children }: { children: React.ReactNode }) => {
+const AdminLayout = ({ children }: AdminLayoutProps) => {
   return (
     <div className="min-h-screen flex bg-gray-100">
       {/* Sidebar */}

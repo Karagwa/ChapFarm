@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import AdminLayout from '../components/layouts/AdminLayout';
 import { adminService } from '../services/adminService';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 // export interface TransportProviderCreate {
 //   name: string;
 //   phone: string;
@@ -21,6 +23,8 @@ const RegisterTransportProvider = () => {
     password: '',
     role: 'transport_provider',
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -40,11 +44,50 @@ const RegisterTransportProvider = () => {
       });
       console.log('Registration successful:', response);
       // Optionally redirect or show success message
-    } catch (error) {
-      console.error('Registration failed:', error);
-      // Handle error (e.g., show error message to user)
-    }
-  };
+      setForm({
+        name: '',
+        phone: '',  
+        vehicle_type: '',
+        location: '',
+        username: '',
+        email: '',
+        password: '',
+        role: 'transport_provider',
+      });
+
+      // Show success toast
+      toast.success('Transport Provider registered successfully!', {
+        autoClose: 4000,
+        position: 'top-right',
+      });
+
+      // Redirect after 2 seconds
+      setTimeout(() => {
+              navigate('/admin');
+            }, 2000);
+
+    } catch (error: any) {
+          console.error('Registration failed:', error);
+          
+          // Show specific error message
+          const errorMessage = error.response?.data?.detail || 'Registration failed. Please try again.';
+          
+          if (errorMessage.includes('already exists')) {
+            toast.error('This email is already registered. Please use a different email address.', {
+              autoClose: 5000,
+              position: 'top-right',
+            });
+          } else {
+            toast.error(errorMessage, {
+              autoClose: 4000,
+              position: 'top-right',
+            });
+          }
+        } finally {
+          setIsSubmitting(false);
+        }
+
+  }
 
   return (
     <AdminLayout>
