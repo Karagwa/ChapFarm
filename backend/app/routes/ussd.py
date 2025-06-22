@@ -309,7 +309,7 @@ async def format_alert_response(location: str, session: Session) -> str:
     Fetches and formats active weather alerts for a given location from the database.
     """
     location_list = location.strip().split("*")
-    location = location_list[2].strip() if len(location_list) > 0 else "Unknown" # Use first part as location
+    location = location_list[1].strip() if len(location_list) > 1 else "Unknown" # Use second part as location
     try:
         now = datetime.utcnow() # Use UTC for comparison with stored timestamps
 
