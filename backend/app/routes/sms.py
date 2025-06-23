@@ -3,16 +3,18 @@ from sqlmodel import Session, select
 from pydantic import BaseModel
 from typing import List, Optional
 import africastalking
+import os
 
 from ..models import AlertRequest, Farmer, AgricultureAlert
 from ..database import get_session
 
+AFRICASTALKING_API_KEY = os.getenv("AFRICASTALKING_API_KEY")
 # Initialize Africa's Talking
 africastalking.initialize(
     username='sandbox',
-    api_key='atsk_ed7ac825ff115627674527ffb114b2c2382ffbb6874ed0957cbbab1efa2b81ad4308e5ed'
+    api_key=AFRICASTALKING_API_KEY
 )
-sms = africastalking.SMS
+sms = africastalking
 
 sms_router = APIRouter(prefix="/sms", tags=["SMS"])
 alert_router = APIRouter(prefix="/alerts", tags=["Alerts"])

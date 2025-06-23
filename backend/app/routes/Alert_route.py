@@ -4,12 +4,14 @@ from sqlmodel import Session, select
 from ..models import AlertRequest, Farmer, AgricultureAlert
 from ..database import get_session
 import africastalking
+import os
 from datetime import datetime
 
+AFRICASTALKING_API_KEY = os.getenv("AFRICASTALKING_API_KEY")
 # Initialize Africa's Talking
 africastalking.initialize(
     username='sandbox',
-    api_key='atsk_ed7ac825ff115627674527ffb114b2c2382ffbb6874ed0957cbbab1efa2b81ad4308e5ed'
+    api_key=AFRICASTALKING_API_KEY
 )
 sms = africastalking.SMS
 
