@@ -17,10 +17,8 @@ const Navbar = () => {
   About
 </Link>
           
-          <Link to="/contact" className="text-gray-700 hover:text-chapfarm-700 font-medium">Contact</Link>
-          <Link to="/admin" className="text-gray-700 hover:text-chapfarm-700 font-medium">Admin</Link>
-          <Link to="/authority" className="text-gray-700 hover:text-chapfarm-700 font-medium">Authority</Link>
-          <Link to="/transport" className="text-gray-700 hover:text-chapfarm-700 font-medium">Transport</Link>
+          <Link to="/contact" className="text-gray-700 hover:text-chapfarm-700 font-medium">Contact Us</Link>
+          
           <Link to="/login">
             <Button variant="outline" className="border-chapfarm-600 text-chapfarm-700 hover:bg-chapfarm-50">Login</Button>
           </Link>

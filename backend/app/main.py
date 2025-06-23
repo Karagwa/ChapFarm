@@ -22,6 +22,7 @@ from .routes.admin import router as admin_router
 from fastapi.middleware.cors import CORSMiddleware
 from .routes.Alert_route import alert_router
 from .routes.sms import sms_router
+from .routes import contact
 
 
 app = FastAPI(
@@ -55,6 +56,7 @@ app.include_router(agric_auth_router)
 app.include_router(admin_router)
 app.include_router(alert_router)
 app.include_router(sms_router)
+app.include_router(contact.router)
 
 @app.get("/")
 def read_root():
