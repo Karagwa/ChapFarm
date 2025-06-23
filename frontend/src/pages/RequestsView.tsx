@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, MoreVertical, RefreshCw } from 'lucide-react';
+import { Search, Filter, RefreshCw } from 'lucide-react';
 import { toast } from 'react-toastify';
 import TransportLayout from '../components/layouts/TransportLayout';
 import { transportService } from '../services/transportService';
 import { TransportRequestDetailed } from '../types/index';
 
+// Status colors mapping - using backend status format
 const statusColors = {
-  pending: 'bg-yellow-100 text-yellow-700',
-  accepted: 'bg-blue-100 text-blue-700',
-  completed: 'bg-green-100 text-green-700',
-  rejected: 'bg-red-100 text-red-700',
-  in_transit: 'bg-purple-100 text-purple-700',
+  'Pending': 'bg-yellow-100 text-yellow-700',
+  'Accepted': 'bg-blue-100 text-blue-700',
+  'Completed': 'bg-green-100 text-green-700',
+  'Rejected': 'bg-red-100 text-red-700',
+  'In Transit': 'bg-purple-100 text-purple-700',
+  'Cancelled': 'bg-gray-100 text-gray-700',
 };
 
 const RequestsView = () => {
@@ -41,18 +43,18 @@ const RequestsView = () => {
   const handleStatusUpdate = async (requestId: number, newStatus: string) => {
     try {
       setUpdatingStatus(requestId);
-      await transportService.updateTransportRequestStatus(requestId, newStatus);
+      const response = await transportService.updateTransportRequestStatus(requestId, newStatus);
       
-      // Update local state
+      // Update local state with the actual new status from backend
       setTransportRequests(prev => 
         prev.map(req => 
           req.id === requestId 
-            ? { ...req, status: newStatus }
+            ? { ...req, status: response.new_status }
             : req
         )
       );
       
-      toast.success(`Request ${newStatus} successfully`);
+      toast.success(response.message || `Request ${newStatus} successfully`);
     } catch (error: any) {
       console.error('Error updating status:', error);
       toast.error('Failed to update request status');
@@ -63,7 +65,7 @@ const RequestsView = () => {
 
   // Filter requests based on active tab and search term
   const filteredRequests = transportRequests.filter(req => {
-    const matchesTab = activeTab === 'All' || req.status.toLowerCase() === activeTab.toLowerCase();
+    const matchesTab = activeTab === 'All' || req.status === activeTab;
     const matchesSearch = searchTerm === '' || 
       req.farmer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (req.pickup_location?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
@@ -112,9 +114,9 @@ const RequestsView = () => {
           </button>
         </div>
 
-        {/* Tabs */}
+        {/* Tabs - Updated to match backend status format */}
         <div className="flex flex-wrap gap-2 mb-6">
-          {['All', 'Pending', 'Accepted', 'In_Transit', 'Completed', 'Rejected'].map((tab) => (
+          {['All', 'Pending', 'Accepted', 'In Transit', 'Completed', 'Rejected'].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -124,10 +126,10 @@ const RequestsView = () => {
                   : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
               }`}
             >
-              {tab.replace('_', ' ')}
+              {tab}
               <span className="ml-2 text-xs">
                 ({tab === 'All' ? transportRequests.length : 
-                  transportRequests.filter(req => req.status.toLowerCase() === tab.toLowerCase()).length})
+                  transportRequests.filter(req => req.status === tab).length})
               </span>
             </button>
           ))}
@@ -174,17 +176,17 @@ const RequestsView = () => {
                     <div className="flex gap-2 mt-1">
                       <span
                         className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                          statusColors[req.status.toLowerCase() as keyof typeof statusColors] || 
+                          statusColors[req.status as keyof typeof statusColors] || 
                           'bg-gray-100 text-gray-700'
                         }`}
                       >
-                        {req.status.replace('_', ' ')}
+                        {req.status}
                       </span>
                     </div>
                   </div>
                   
-                  {/* Action Buttons */}
-                  {req.status.toLowerCase() === 'pending' && (
+                  {/* Action Buttons - Updated to send correct status format */}
+                  {req.status === 'Pending' && (
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleStatusUpdate(req.id, 'accepted')}
@@ -203,7 +205,7 @@ const RequestsView = () => {
                     </div>
                   )}
                   
-                  {req.status.toLowerCase() === 'accepted' && (
+                  {req.status === 'Accepted' && (
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleStatusUpdate(req.id, 'in_transit')}
@@ -215,7 +217,7 @@ const RequestsView = () => {
                     </div>
                   )}
                   
-                  {req.status.toLowerCase() === 'in_transit' && (
+                  {req.status === 'In Transit' && (
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleStatusUpdate(req.id, 'completed')}

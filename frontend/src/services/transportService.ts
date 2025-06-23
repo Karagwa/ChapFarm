@@ -1,7 +1,16 @@
 import axios from 'axios';
 import API_BASE_URL from '../config/api_config';
 import { authService } from './auth';
-import { TransportRequestDetailed } from '../types/index'; // Changed from TransportRequest
+import { TransportRequestDetailed } from '../types/index';
+
+// Define the response interface to match backend
+interface TransportUpdateResponse {
+  message: string;
+  request_id: number;
+  old_status: string;
+  new_status: string;
+  success: boolean;
+}
 
 export const transportService = {
   getTransportRequests: async (): Promise<TransportRequestDetailed[]> => {
@@ -40,12 +49,19 @@ export const transportService = {
     }
   },
 
-  updateTransportRequestStatus: async (requestId: number, status: string): Promise<any> => {
+  updateTransportRequestStatus: async (requestId: number, status: string): Promise<TransportUpdateResponse> => {
     try {
       const token = authService.getToken();
+      
+      // Convert frontend status to backend format (Title Case)
+      const backendStatus = status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+      
+      // Handle special case for "in_transit" -> "In Transit"
+      const formattedStatus = backendStatus === 'In_transit' ? 'In Transit' : backendStatus;
+      
       const response = await axios.patch(
         `${API_BASE_URL}/transport/transport_requests/${requestId}`,
-        { status },
+        { status: formattedStatus },
         {
           headers: {
             Authorization: `Bearer ${token}`,

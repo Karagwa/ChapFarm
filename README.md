@@ -23,7 +23,6 @@
 ### 🌾 For Agricultural Authorities (Web Dashboard)
 - **Report Management**: View and resolve farmer-submitted issues
 - **Alert Broadcasting**: Send weather and agricultural alerts
-- **Direct Messaging**: Communicate with farmers via USSD
 
 ### 🚜 For Transport Providers (Web Dashboard)
 - **Request Management**: View and accept transport requests
@@ -53,10 +52,11 @@
                                 │                                 │
           ┌─────────────────────┼─────────────────────────────────┘
           │                     │
-    ┌─────▼──────┐    ┌────────▼────────┐    ┌──────────────┐
-    │  Database  │    │ Weather APIs    │    │   AI Service │
-    │ (SQLite)   │    │(OpenWeatherMap) │    │(Amazon Nova) │
-    └────────────┘    └─────────────────┘    └──────────────┘
+    ┌─────▼──────┐    ┌────────▼────────┐    ┌──────────────---┐
+    │  Database  │    │ Weather APIs    │    │ AWS AI Service  |
+                                             │(Bedrock)
+    │ (SQLite)   │    │(OpenWeatherMap) │    │(Amazon Nova)    │
+    └────────────┘    └─────────────────┘    └──────────────---┘
 ```
 
 ---
@@ -95,11 +95,8 @@ pip install -r requirements.txt
 cp .env.example .env
 # Edit .env with your configuration (see Backend Configuration section)
 
-# Initialize database
-python -c "from app.database import create_db_and_tables; create_db_and_tables()"
-
-# Create super admin (optional)
-python manage.py create-super
+# Create super admin 
+python app\scripts\create_super_admin.py 
 
 # Start backend server
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
@@ -156,8 +153,8 @@ AWS_SECRET_ACCESS_KEY=your-aws-secret-key
 AWS_REGION=eu-north-1
 
 # Africa's Talking (for USSD/SMS)
-USERNAME=your-africastalking-username
-API_KEY=your-africastalking-api-key
+
+AFRICASTALKING_API_KEY=your-africastalking-api-key
 ```
 
 ### Frontend Environment Variables
@@ -222,7 +219,7 @@ python -c "from app.database import create_db_and_tables; create_db_and_tables()
 ### Create Admin User
 ```bash
 # Create super admin
-python manage.py create-super
+python app\scripts\create_super_admin.py
 
 # Follow prompts to set username, email, and password
 ```
@@ -245,7 +242,7 @@ uvicorn app.main:app --reload
 ### 1. Backend API Testing
 ```bash
 # Test API health
-curl http://localhost:8000/health
+curl http://localhost:8000
 
 # Test authentication
 curl -X POST "http://localhost:8000/auth/login" \
@@ -450,12 +447,11 @@ ChapFarm aims to bridge the digital divide in agriculture by providing essential
 ### Short Term (3-6 months)
 - [ ] Multi-language USSD support (Luganda, Swahili)
 - [ ] Mobile app for smartphones
-- [ ] Advanced weather forecasting
+- [ ] Advanced weather forecasting with AI insight
+- [ ] Market price data integration
 - [ ] Crop price information
 
 ### Medium Term (6-12 months)
-- [ ] IoT sensor integration
-- [ ] Blockchain supply chain tracking
 - [ ] Micro-finance integration
 - [ ] Regional expansion
 

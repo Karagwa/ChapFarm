@@ -4,8 +4,15 @@ from sqlmodel import Session, select
 from app.models import TransportRequest, User, Farmer
 from app.database import get_session
 from app.auth.jwt_handler import require_transport_provider
+from pydantic import BaseModel
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/transport", tags=["Transport"])
+
+class StatusUpdateRequest(BaseModel):
+    status: str
 
 @router.get("/transport_requests")
 async def get_transport_requests(
@@ -49,40 +56,82 @@ async def get_transport_requests(
 @router.patch("/transport_requests/{request_id}")
 async def update_transport_request(
     request_id: int, 
-    status_update: dict,  # Expect {"status": "accepted/rejected/completed"}
+    status_update: StatusUpdateRequest,  # Properly typed Pydantic model
     session: Session = Depends(get_session),
     transport_provider: User = Depends(require_transport_provider)
 ):
     """Update transport request status"""
     try:
+        logger.info(f"Transport provider {transport_provider.id} updating request {request_id} to status {status_update.status}")
+        
+        # Get the transport request
         db_request = session.get(TransportRequest, request_id)
         if not db_request:
+            logger.warning(f"Transport request {request_id} not found")
             raise HTTPException(status_code=404, detail="Transport request not found")
         
-        new_status = status_update.get("status")
+        # Validate status
         valid_statuses = ["Pending", "Accepted", "Rejected", "Completed", "Cancelled", "In Transit"]
         
-        if new_status not in valid_statuses:
-            raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {valid_statuses}")
+        if status_update.status not in valid_statuses:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Invalid status '{status_update.status}'. Must be one of: {valid_statuses}"
+            )
         
-        db_request.status = new_status
+        # Validate status transitions to prevent invalid state changes
+        current_status = db_request.status
+        valid_transitions = {
+            "Pending": ["Accepted", "Rejected", "Cancelled"],
+            "Accepted": ["In Transit", "Cancelled"],
+            "In Transit": ["Completed", "Cancelled"],
+            "Completed": [],  # Final state
+            "Rejected": [],   # Final state
+            "Cancelled": []   # Final state
+        }
+        
+        if (current_status in valid_transitions and 
+            status_update.status not in valid_transitions[current_status]):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Cannot transition from '{current_status}' to '{status_update.status}'. Valid transitions: {valid_transitions.get(current_status, [])}"
+            )
+        
+        # Store old status for logging and response
+        old_status = db_request.status
+        
+        # Update the status
+        db_request.status = status_update.status
+        
+        # Add timestamp for updates if your model supports it
+        from datetime import datetime
+        if hasattr(db_request, 'updated_at'):
+            db_request.updated_at = datetime.utcnow()
         
         session.add(db_request)
         session.commit()
         session.refresh(db_request)
         
+        logger.info(f"Successfully updated transport request {request_id} from '{old_status}' to '{status_update.status}'")
+        
         return {
-            "message": f"Transport request {request_id} status updated to {new_status}",
+            "message": f"Transport request {request_id} status updated from '{old_status}' to '{status_update.status}'",
             "request_id": request_id,
-            "new_status": new_status
+            "old_status": old_status,
+            "new_status": status_update.status,
+            "success": True
         }
         
     except HTTPException:
+        session.rollback()
         raise
     except Exception as e:
         session.rollback()
-        print(f"Error updating transport request: {e}")
-        raise HTTPException(status_code=500, detail="Failed to update transport request")
+        logger.error(f"Unexpected error updating transport request {request_id}: {str(e)}")
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Failed to update transport request: {str(e)}"
+        )
 
 @router.get("/transport_requests/history")
 async def get_transport_history(

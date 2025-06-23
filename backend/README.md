@@ -42,8 +42,8 @@ cp .env.example .env
 # Initialize database
 python -c "from app.database import create_db_and_tables; create_db_and_tables()"
 
-# Create super admin (optional)
-python manage.py create-super
+# Create super admin 
+python app\scripts\create_super_admin.py
 
 # Run the application
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
@@ -317,8 +317,7 @@ AWS_SECRET_ACCESS_KEY=your-aws-secret-key
 AWS_REGION=eu-north-1
 
 # Africa's Talking (for USSD/SMS)
-USERNAME=your-username
-API_KEY=your-api-key
+AFRICASTALKING_API_KEY=your-key
 
 ```
 
@@ -333,14 +332,9 @@ python -c "from app.database import create_db_and_tables; create_db_and_tables()
 
 ### Create Super Admin
 ```bash
-python manage.py create-super
+python app\scripts\create_super_admin.py
 ```
 
-### Database Migrations
-```bash
-# Run USSD table migration
-python app/scripts/migrate_ussd.py
-```
 
 ### Reset Database (Development)
 ```bash
@@ -359,7 +353,7 @@ uvicorn app.main:app --reload
 Use the interactive documentation at `http://localhost:8000/docs` to test endpoints.
 
 ### USSD Testing
-Test USSD flows using Africa's Talking simulator or webhook testing tools like ngrok:
+Test USSD flows using Africa's Talking simulator and  webhook testing tools like ngrok:
 
 ```bash
 # Install ngrok
